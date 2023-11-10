@@ -3,6 +3,7 @@ const bcrypt = require("bcrypt");
 const joi = require("joi");
 const router = express.Router();
 var nodemailer = require("nodemailer");
+const jwt = require("jsonwebtoken")
 const path = require("path")
 const fs = require('fs');
 
@@ -77,9 +78,12 @@ router.post("/login", async (req, res) => {
         .compare(req.body.password, user.password)
         .then(function (result) {
           if (result) {
+            const token = jwt.sign({name: user.name}, process.env.SECRET_KEY, {expiresIn: "1h"})
+
             res.send({
               message: "Login Successfull!!",
               user: user,
+              token: token
             });
           } else {
             res.send("Wrong Credentials!!");
